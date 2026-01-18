@@ -1,9 +1,8 @@
-// config/session.js
 import MongoStore from "connect-mongo";
 import session from "express-session";
 
 export const sessionMiddleware = session({
-  secret: "mg",
+  secret: process.env.SESSION_SECRET || "mg",
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
@@ -11,10 +10,6 @@ export const sessionMiddleware = session({
     collectionName: "sessions",
     ttl: 1000 * 60 * 10,
   }),
-  cookie: {
-    maxAge: 1000 * 60 * 10,
-    httpOnly: true,
-    secure: false,
-  },
+  cookie: { maxAge: 1000 * 60 * 10, httpOnly: true, secure: false },
   rolling: true,
 });

@@ -13,9 +13,9 @@ export const createApp = () => {
   app.use(express.json({ limit: "5mb" }));
   app.use(
     cors({
-      origin: "http://localhost:5173",
+      origin: "https://edulearnhub.vercel.app",
       credentials: true,
-    })
+    }),
   );
 
   app.use(sessionMiddleware);
