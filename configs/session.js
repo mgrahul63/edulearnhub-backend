@@ -8,8 +8,8 @@ export const sessionMiddleware = session({
   store: MongoStore.create({
     mongoUrl: process.env.MONGODB_URL,
     collectionName: "sessions",
-    ttl: 1000 * 60 * 10,
+    ttl: 2 * 24 * 60 * 60, // 2 days in seconds
   }),
-  cookie: { maxAge: 1000 * 60 * 10, httpOnly: true, secure: false },
+  cookie: { maxAge: 2 * 24 * 60 * 60 * 1000, httpOnly: true, secure: false },
   rolling: true,
 });
