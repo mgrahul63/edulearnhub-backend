@@ -1,10 +1,10 @@
 // config/app.js
 import cors from "cors";
+import "dotenv/config";
 import express from "express";
 import { sessionMiddleware } from "./configs/session.js";
 import adminRouter from "./routes/adminRoutes.js";
 import userRouter from "./routes/userRoutes.js";
-
 export const createApp = () => {
   //create express
   const app = express();
@@ -14,7 +14,9 @@ export const createApp = () => {
   app.use(
     cors({
       origin: "https://edulearnhub.vercel.app",
-      credentials: true,
+      credentials: true, 
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
     }),
   );
 

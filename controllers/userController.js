@@ -8,8 +8,9 @@ import { saltAndHashPassword } from "../utils/hash.js";
 // SIGNUP
 // ===========================
 export const signup = async (req, res) => {
+  console.log("call");
   try {
-    const { name, email, password } = req.body; 
+    const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -58,7 +59,8 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
+    console.log(email);
+    console.log(password);
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -146,5 +148,3 @@ export const updateProfile = async (req, res) => {
     });
   }
 };
-
-
