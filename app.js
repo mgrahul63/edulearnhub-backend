@@ -13,10 +13,10 @@ export const createApp = () => {
   app.use(express.json({ limit: "5mb" }));
   app.use(
     cors({
-      origin: "https://edulearnhub.vercel.app",
-      credentials: true, 
+      origin: process.env.ORIGIN,
+      credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization"],
+      allowedHeaders: ["Content-Type", "Authorization", "token"],
     }),
   );
 
