@@ -1,5 +1,4 @@
 // config/app.js
-import cors from "cors";
 import "dotenv/config";
 import express from "express";
 import { sessionMiddleware } from "./configs/session.js";
@@ -13,24 +12,26 @@ export const createApp = () => {
   app.use(express.json({ limit: "5mb" }));
   const allowedOrigin = process.env.ORIGIN; // your frontend URL
 
-  app.use(
-    cors({
-      origin: allowedOrigin, // only allow your frontend
-      credentials: true, // allow cookies/session
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization", "token"], // include your custom token header
-    }),
-  );
+  // CORS middleware
+  app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET,POST,PUT,DELETE,OPTIONS",
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization, token",
+    );
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    next();
+  });
 
-  // Handle preflight OPTIONS requests
-  app.options(
-    "*",
-    cors({
-      origin: allowedOrigin,
-      credentials: true,
-      allowedHeaders: ["Content-Type", "Authorization", "token"],
-    }),
-  );
+  // Preflight handler
+  app.options("*", (req, res) => {
+    res.sendStatus(204); // just respond
+  });
+
   app.use(sessionMiddleware);
 
   app.use("/api/status", (req, res) => res.send("Server is Live"));
