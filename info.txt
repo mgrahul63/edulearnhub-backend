@@ -1,0 +1,10 @@
+একটা Course publish system বানাতে হলে সাধারণত ডাটাবেজে courses নামে একটি টেবিল থাকে:
+
+✅ যে টেবিলগুলো লাগবে
+users – instructor / student
+courses – কোর্স মেইন টেবিল
+categories – কোর্স ক্যাটাগরি
+modules – কোর্স মডিউল
+lessons – ভিডিও/লেসন
+enrollments – কে কোন কোর্স নিয়েছে
+reviews – রেটিং/রিভিউ
