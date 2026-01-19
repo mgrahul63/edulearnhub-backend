@@ -53,7 +53,7 @@ const courseDetailsSchema = new mongoose.Schema(
     },
     certificate: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const CourseDetailsModel =
@@ -141,62 +141,62 @@ export default CourseDetailsModel;
 
 // {courseId: "696398aab97b325716437c21",…}
 // certificate
-// : 
+// :
 // true
 // courseId
-// : 
+// :
 // "696398aab97b325716437c21"
 // fullDescription
-// : 
+// :
 // [{type: "paragraph",…}, {type: "paragraph",…}, {type: "paragraph",…}, {type: "list",…},…]
 // 0
-// : 
+// :
 // {type: "paragraph",…}
 // text
-// : 
+// :
 // "This complete Web Development course is designed to guide learners from the very basics to building real-world, production-ready web applications."
 // type
-// : 
+// :
 // "paragraph"
 // 1
-// : 
+// :
 // {type: "paragraph",…}
 // 2
-// : 
+// :
 // {type: "paragraph",…}
 // 3
-// : 
+// :
 // {type: "list",…}
 // 4
-// : 
+// :
 // {type: "paragraph",…}
 // 5
-// : 
+// :
 // {type: "list",…}
 // 6
-// : 
+// :
 // {type: "paragraph",…}
 // language
-// : 
+// :
 // "Bangla"
 // level
-// : 
+// :
 // "beginner"
 // promoVideoUrl
-// : 
+// :
 // "https://www.youtube.com/watch?v=example_promo_video"
 // requirements
-// : 
+// :
 // ["Basic computer knowledge", "Access to a computer with internet connection",…]
 // targetAudience
-// : 
+// :
 // ["Students who want to learn web development", "Beginners with no prior programming experience",…]
 // totalDuration
-// : 
+// :
 // "2000"
 // totalLessons
-// : 
+// :
 // "120"
 // whatYouWillLearn
-// : 
+// :
 // ["Structure web pages using semantic HTML", "Style applications with modern CSS techniques",…]
