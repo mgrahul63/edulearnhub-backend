@@ -1,4 +1,5 @@
 // config/app.js
+import cors from "cors";
 import "dotenv/config";
 import express from "express";
 import { sessionMiddleware } from "./configs/session.js";
@@ -10,14 +11,23 @@ export const createApp = () => {
 
   //Midddleware for Global
   app.use(express.json({ limit: "5mb" }));
-  const allowedOrigin = process.env.ORIGIN || "https://edulearnhub.vercel.app"; // your frontend URL
+  const allowedOrigins = [
+    "http://localhost:5173",
+    "https://edulearnhub.vercel.app",
+  ];
 
   app.use(
     cors({
-      origin: allowedOrigin, // only your frontend
-      credentials: true, // allow cookies/session
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // allowed HTTP methods
-      allowedHeaders: ["Content-Type", "Authorization", "token"], // allowed headers
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization", "token"],
     }),
   );
 
