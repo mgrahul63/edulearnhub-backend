@@ -16,7 +16,7 @@ export const createApp = () => {
     cors({
       origin: allowedOrigin, // only your frontend
       credentials: true, // allow cookies/session
-      methods: ["GET", "POST", "PUT", "DELETE"], // allowed HTTP methods
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // allowed HTTP methods
       allowedHeaders: ["Content-Type", "Authorization", "token"], // allowed headers
     }),
   );
