@@ -9,13 +9,19 @@ import {
 
 export const getCourses = async (req, res) => {
   try {
+    // Pagination
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
+
+    // Filters
     const categoryId = req.query.categoryId || "all";
+    const status = req.query.status || null;
 
     // Build filter object
-    const filter = categoryId !== "all" ? { categoryId } : {};
+    const filter = {};
+    if (categoryId !== "all") filter.categoryId = categoryId;
+    if (status) filter.status = status; // optional: draft/published
 
     // Count total courses for pagination
     const totalCourses = await CourseModel.countDocuments(filter);
@@ -26,7 +32,7 @@ export const getCourses = async (req, res) => {
       .limit(limit)
       .lean();
 
-    // Map courses with category name
+    // Attach category name
     const coursesWithCategory = await Promise.all(
       courses.map(async (course) => {
         let category_name = null;
@@ -46,14 +52,15 @@ export const getCourses = async (req, res) => {
       message:
         coursesWithCategory.length > 0
           ? "Courses fetched successfully"
-          : "No courses found for this category",
+          : "No courses found for this category/status",
       courses: objectIdArrayConvert(coursesWithCategory),
       total: totalCourses,
       page,
       limit,
+      hasNextPage: skip + coursesWithCategory.length < totalCourses,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching courses:", error);
     res.status(500).json({
       success: false,
       message: error.message,
