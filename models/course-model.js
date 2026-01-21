@@ -12,11 +12,11 @@ const courseSchema = new Schema(
       required: true,
     },
 
-    // instructorId: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: "User",
-    //   default: null,
-    // },
+    instructorId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
 
     price: { type: Number, default: 0 },
     thumbnail: { type: String },
@@ -27,7 +27,7 @@ const courseSchema = new Schema(
       default: "draft",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const CourseModel =
