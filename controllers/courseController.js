@@ -6,16 +6,27 @@ import {
   objectIdArrayConvert,
   objectIdConvert,
 } from "../utils/objectIdConvert.js";
- 
+
 export const getCourses = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 15;
+    const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
+    const categoryId = req.query.categoryId || "all";
 
-    const totalCourses = await CourseModel.countDocuments();
-    const courses = await CourseModel.find().skip(skip).limit(limit).lean();
+    // Build filter object
+    const filter = categoryId !== "all" ? { categoryId } : {};
 
+    // Count total courses for pagination
+    const totalCourses = await CourseModel.countDocuments(filter);
+
+    // Fetch courses with pagination
+    const courses = await CourseModel.find(filter)
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    // Map courses with category name
     const coursesWithCategory = await Promise.all(
       courses.map(async (course) => {
         let category_name = null;
@@ -29,8 +40,13 @@ export const getCourses = async (req, res) => {
       }),
     );
 
+    // Send response
     res.status(200).json({
       success: true,
+      message:
+        coursesWithCategory.length > 0
+          ? "Courses fetched successfully"
+          : "No courses found for this category",
       courses: objectIdArrayConvert(coursesWithCategory),
       total: totalCourses,
       page,
