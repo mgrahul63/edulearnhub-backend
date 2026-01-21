@@ -6,13 +6,18 @@ import {
   objectIdArrayConvert,
   objectIdConvert,
 } from "../utils/objectIdConvert.js";
-
+ 
 export const getCourses = async (req, res) => {
   try {
-    const allCourses = await CourseModel.find().lean();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 15;
+    const skip = (page - 1) * limit;
+
+    const totalCourses = await CourseModel.countDocuments();
+    const courses = await CourseModel.find().skip(skip).limit(limit).lean();
 
     const coursesWithCategory = await Promise.all(
-      allCourses.map(async (course) => {
+      courses.map(async (course) => {
         let category_name = null;
         if (course?.categoryId) {
           const category = await CategoryModel.findById(course.categoryId)
@@ -21,13 +26,15 @@ export const getCourses = async (req, res) => {
           category_name = category ? category.category_name : null;
         }
         return { ...course, category_name };
-      })
+      }),
     );
 
     res.status(200).json({
       success: true,
       courses: objectIdArrayConvert(coursesWithCategory),
-      message: "Courses fetched successfully",
+      total: totalCourses,
+      page,
+      limit,
     });
   } catch (error) {
     console.error(error);
@@ -87,7 +94,7 @@ export const addCourse = async (req, res) => {
           status,
           ...(imageUrl && { thumbnail: imageUrl }),
         },
-        { new: true }
+        { new: true },
       );
     } else {
       course = await CourseModel.create({
@@ -156,7 +163,7 @@ export const addCourseDetails = async (req, res) => {
           certificate,
         },
       },
-      { new: true, upsert: true } // new: return updated doc, upsert: create if not exists
+      { new: true, upsert: true }, // new: return updated doc, upsert: create if not exists
     );
 
     const message = courseDetails
