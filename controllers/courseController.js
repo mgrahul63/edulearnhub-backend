@@ -17,6 +17,7 @@ export const getCourses = async (req, res) => {
     // Filters
     const categoryId = req.query.categoryId || "all";
     const status = req.query.status || null; // "published" or null
+    const instructorId = req.query.instructorId || null;
 
     // Build filter object
     const filter = {};
@@ -28,6 +29,9 @@ export const getCourses = async (req, res) => {
     if (status === "published") {
       filter.status = "published"; // only published
     }
+    if (instructorId) {
+      filter.instructorId = instructorId;
+    }
     // else: do not filter by status, return both draft & published
 
     // Count total courses for pagination
@@ -37,6 +41,7 @@ export const getCourses = async (req, res) => {
     const courses = await CourseModel.find(filter)
       .skip(skip)
       .limit(limit)
+      .select("-instructorId")
       .lean();
 
     // Attach category name
