@@ -43,7 +43,10 @@ export const getCourses = async (req, res) => {
       .skip(skip)
       .limit(limit)
       .populate({ path: "categoryId", select: "category_name" })
-      .populate({ path: "instructorId", select: "name" })
+      .populate({
+        path: "instructorId",
+        select: { name: 1, id: 1 },
+      })
       .lean();
 
     // Map to include category_name and instructorName
@@ -51,6 +54,7 @@ export const getCourses = async (req, res) => {
       ...course,
       category_name: course.categoryId?.category_name || null,
       instructorName: course.instructorId?.name || "N/A",
+      instructorId: course.instructorId?.id || null,
       categoryId: undefined, // remove raw ObjectId
       instructorId: undefined, // remove raw ObjectId
     }));
