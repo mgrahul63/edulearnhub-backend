@@ -195,6 +195,7 @@ export const deleteCourse = async (req, res) => {
     });
   }
 };
+
 export const addCourseDetails = async (req, res) => {
   try {
     const {
@@ -260,7 +261,6 @@ export const addCourseDetails = async (req, res) => {
 
 export const getCourseDetails = async (req, res) => {
   const { courseId } = req.query; // ← gets the id from query string
-  console.log(courseId);
 
   const courseDetails = await CourseDetailsModel.findOne({ courseId });
   if (!courseDetails) {
