@@ -55,8 +55,6 @@ export const getCourses = async (req, res) => {
       category_name: course.categoryId?.category_name || null,
       instructorName: course.instructorId?.name || "N/A",
       instructorId: course.instructorId?._id || null,
-      categoryId: undefined, // remove raw ObjectId
-      instructorId: undefined, // remove raw ObjectId
     }));
 
     res.status(200).json({
