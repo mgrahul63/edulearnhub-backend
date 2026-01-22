@@ -3,6 +3,7 @@ import { addCategory, getCategory } from "../controllers/categoryController.js";
 import {
   addCourse,
   addCourseDetails,
+  deleteCourse,
   getCourseDetails,
   getCourses,
 } from "../controllers/courseController.js";
@@ -19,9 +20,11 @@ adminRouter.post(
   "/add-course",
   protectRoute,
   upload.single("image"),
-  addCourse
+  addCourse,
 );
 adminRouter.get("/get-course", protectRoute, getCourses);
+ 
+adminRouter.delete("/delete-course", protectRoute, deleteCourse);
 adminRouter.post("/add-course-details", protectRoute, addCourseDetails);
 adminRouter.get("/get-course-details", protectRoute, getCourseDetails);
 

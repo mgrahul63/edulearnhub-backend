@@ -162,6 +162,39 @@ export const addCourse = async (req, res) => {
   }
 };
 
+export const deleteCourse = async (req, res) => {
+  try {
+    const { courseId, instructorId } = req.body;
+
+    if (!courseId || !instructorId) {
+      return res.status(400).json({
+        success: false,
+        message: "courseId and instructorId are required",
+      });
+    }
+    const deletedCourse = await CourseModel.findOneAndDelete({
+      _id: courseId,
+      instructorId: instructorId,
+    });
+    if (!deletedCourse) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found or you don't have permission to delete it",
+      });
+    }
+    res.json({
+      success: true,
+      message: "Course deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting course:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while deleting course",
+      error: error.message,
+    });
+  }
+};
 export const addCourseDetails = async (req, res) => {
   try {
     const {
