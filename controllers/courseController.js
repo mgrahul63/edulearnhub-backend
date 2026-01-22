@@ -1,5 +1,4 @@
 import cloudinary from "../configs/cloudinary.js";
-import CategoryModel from "../models/category-model.js";
 import CourseModel from "../models/course-model.js";
 import CourseDetailsModel from "../models/courseDetails-model.js";
 import {
@@ -11,15 +10,16 @@ import mongoose from "mongoose";
 
 export const getCourses = async (req, res) => {
   try {
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
+    // Pagination
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.max(1, Number(req.query.limit) || 10);
     const skip = (page - 1) * limit;
 
     const { categoryId, status, instructorId } = req.query;
 
+    // Build filter
     const filter = {};
 
-    // Category filter (safe)
     if (
       categoryId &&
       categoryId !== "all" &&
@@ -28,53 +28,44 @@ export const getCourses = async (req, res) => {
       filter.categoryId = categoryId;
     }
 
-    // Status filter
     if (status === "published") {
       filter.status = "published";
     }
 
-    // Instructor filter
     if (instructorId && mongoose.Types.ObjectId.isValid(instructorId)) {
       filter.instructorId = instructorId;
     }
 
     const totalCourses = await CourseModel.countDocuments(filter);
 
+    // Fetch courses with populated category and instructor
     const courses = await CourseModel.find(filter)
       .skip(skip)
       .limit(limit)
-      .select("-instructorId") // 👈 not sending instructorId
+      .populate({ path: "categoryId", select: "category_name" })
+      .populate({ path: "instructorId", select: "name" })
       .lean();
 
-    const coursesWithCategory = await Promise.all(
-      courses.map(async (course) => {
-        let category_name = null;
-
-        if (
-          course.categoryId &&
-          mongoose.Types.ObjectId.isValid(course.categoryId)
-        ) {
-          const category = await CategoryModel.findById(course.categoryId)
-            .select("category_name")
-            .lean();
-          category_name = category?.category_name || null;
-        }
-
-        return { ...course, category_name };
-      }),
-    );
+    // Map to include category_name and instructorName
+    const coursesWithDetails = courses.map((course) => ({
+      ...course,
+      category_name: course.categoryId?.category_name || null,
+      instructorName: course.instructorId?.name || "N/A",
+      categoryId: undefined, // remove raw ObjectId
+      instructorId: undefined, // remove raw ObjectId
+    }));
 
     res.status(200).json({
       success: true,
       message:
-        coursesWithCategory.length > 0
+        coursesWithDetails.length > 0
           ? "Courses fetched successfully"
           : "No courses found",
-      courses: objectIdArrayConvert(coursesWithCategory),
+      courses: objectIdArrayConvert(coursesWithDetails),
       total: totalCourses,
       page,
       limit,
-      hasNextPage: skip + coursesWithCategory.length < totalCourses,
+      hasNextPage: skip + coursesWithDetails.length < totalCourses,
     });
   } catch (error) {
     console.error("Error fetching courses:", error);
