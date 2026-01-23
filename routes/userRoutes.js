@@ -35,5 +35,6 @@ userRouter.post("/logout", (req, res) => {
 userRouter.post("/check", protectRoute, checkAuth);
 userRouter.get("/courses", protectRoute, getCourses);
 userRouter.get("/get-course-details", protectRoute, getCourseDetails);
+userRouter.get("/check-enrollment", protectRoute,  getCheckEnrollment);
 
 export default userRouter;

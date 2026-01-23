@@ -1,6 +1,7 @@
 import cloudinary from "../configs/cloudinary.js";
 import CourseModel from "../models/course-model.js";
 import CourseDetailsModel from "../models/courseDetails-model.js";
+import PaymentModel from "../models/payments-model.js";
 import {
   objectIdArrayConvert,
   objectIdConvert,
@@ -261,4 +262,32 @@ export const getCourseDetails = async (req, res) => {
     return res.status(404).json({ success: false, message: "Not found" });
   }
   res.json({ success: true, data: courseDetails });
+};
+
+export const getCheckEnrollment = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { courseId } = req.query;
+
+    if (!courseId) {
+      return res.status(400).json({ success: false });
+    }
+
+    const approvedPayment = await PaymentModel.exists({
+      courseId,
+      userId,
+      status: "Approved",
+    });
+
+    res.status(200).json({
+      success: true,
+      data: !!approvedPayment,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      data: false,
+    });
+  }
 };
