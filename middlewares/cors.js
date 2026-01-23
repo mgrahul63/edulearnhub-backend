@@ -1,4 +1,3 @@
-// middleware/cors.js
 export const corsMiddleware = (req, res, next) => {
   const allowedOrigins = [
     "http://localhost:5173",
@@ -17,7 +16,6 @@ export const corsMiddleware = (req, res, next) => {
   );
   res.setHeader("Access-Control-Allow-Credentials", "true");
 
-  // Handle preflight
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
