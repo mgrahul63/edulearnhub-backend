@@ -1,6 +1,5 @@
-import { connectDB } from "./db/DBconnect";
-
-import { createApp } from "./app";
+import { createApp } from "../app";
+import { connectDB } from "../db/DBconnect";
 
 // Connect MongoDB once
 await connectDB();
