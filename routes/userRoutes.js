@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getCheckEnrollment,
   getCourseDetails,
   getCourses,
 } from "../controllers/courseController.js";
