@@ -15,9 +15,8 @@ export const createApp = () => {
 
   // Allowed origins
   const allowedOrigins = [
-    "http://localhost:5173",
-    "https://edulearnhub-backend.vercel.app", // deployed backend itself
-    "https://edulearnhub.vercel.app", // frontend deployed
+    "https://edulearnhub.vercel.app/",
+    "http://localhost:5173/",
   ];
 
   // CORS middleware (Vercel-safe)
