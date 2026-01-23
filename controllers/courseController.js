@@ -53,6 +53,7 @@ export const getCourses = async (req, res) => {
     const coursesWithDetails = courses.map((course) => ({
       ...course,
       category_name: course.categoryId?.category_name || null,
+      categoryId: course.categoryId?._id || null,
       instructorName: course.instructorId?.name || "N/A",
       instructorId: course.instructorId?._id || null,
     }));
