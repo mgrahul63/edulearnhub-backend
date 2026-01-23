@@ -18,8 +18,9 @@ const courseDetailsSchema = new mongoose.Schema(
         },
         heading: String, // for all as an optional field
         text: String, // for paragraph
-        url: String, // for link
         items: [String], // for list
+        url: String, // for link
+        description: String, // for link
       },
     ],
 
