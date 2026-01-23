@@ -1,11 +1,14 @@
-import { createApp } from "../app";
-import { connectDB } from "../db/DBconnect";
+import microCors from "micro-cors";
+import { connectDB } from "../db/DBconnect.js";
+import { createApp } from "./app.js";
 
-// Connect MongoDB once
 await connectDB();
-
-// Create Express app
 const app = createApp();
 
-// Export as serverless function
-export default (req, res) => app(req, res);
+const cors = microCors({
+  allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  origin: ["https://edulearnhub.vercel.app", "http://localhost:5173"],
+  allowCredentials: true,
+});
+
+export default cors((req, res) => app(req, res));
