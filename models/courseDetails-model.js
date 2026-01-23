@@ -13,10 +13,12 @@ const courseDetailsSchema = new mongoose.Schema(
       {
         type: {
           type: String,
-          enum: ["paragraph", "list"],
+          enum: ["paragraph", "list", "link"],
           required: true,
         },
+        heading: String, // for all as an optional field
         text: String, // for paragraph
+        url: String, // for link
         items: [String], // for list
       },
     ],
