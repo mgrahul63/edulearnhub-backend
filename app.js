@@ -4,6 +4,7 @@ import "dotenv/config";
 import express from "express";
 import { sessionMiddleware } from "./configs/session.js";
 import adminRouter from "./routes/adminRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 export const createApp = () => {
   //create express
@@ -36,6 +37,7 @@ export const createApp = () => {
   app.use("/api/status", (req, res) => res.send("Server is Live"));
   app.use("/api/auth", userRouter);
   app.use("/api/admin", adminRouter);
+  app.use("/api/payments", paymentRoutes);
   //   app.use("/api/auth", authRouter);
 
   return app;

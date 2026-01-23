@@ -1,5 +1,8 @@
 import express from "express";
-import { getCourseDetails, getCourses } from "../controllers/courseController.js";
+import {
+  getCourseDetails,
+  getCourses,
+} from "../controllers/courseController.js";
 import { checkAuth, login, signup } from "../controllers/userController.js";
 import { protectRoute } from "../middlewares/auth.js";
 
@@ -32,6 +35,5 @@ userRouter.post("/logout", (req, res) => {
 userRouter.post("/check", protectRoute, checkAuth);
 userRouter.get("/courses", protectRoute, getCourses);
 userRouter.get("/get-course-details", protectRoute, getCourseDetails);
- 
 
 export default userRouter;
