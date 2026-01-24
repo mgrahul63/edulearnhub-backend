@@ -294,20 +294,29 @@ export const getChapters = async (req, res) => {
         .json({ success: false, message: "Invalid course ID" });
     }
 
-    const courseObjectId = new mongoose.Types.ObjectId(courseId);
-    const bookIdObjectId = new mongoose.Types.ObjectId(bookId);
+    if (!bookId || !mongoose.Types.ObjectId.isValid(bookId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid book ID" });
+    }
 
-    const allchapters = await ChapterModel.findOne({
-      $and: [{ courseId: courseObjectId }, { bookId: bookIdObjectId }],
+    const chapters = await ChapterModel.find({
+      courseId,
+      bookId,
     })
       .sort({ orderNo: 1 })
       .lean();
 
-    const chapters = objectIdArrayConvert(allchapters);
-    return res.json({ success: true, chapters });
+    return res.json({
+      success: true,
+      chapters: objectIdArrayConvert(chapters), // safe now
+    });
   } catch (error) {
     console.error("Get chapters failed:", error);
-    return res.status(500).json({ success: false, message: "Server error" });
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };
 
