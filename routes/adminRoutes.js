@@ -1,5 +1,6 @@
 import express from "express";
 import { addCategory, getCategory } from "../controllers/categoryController.js";
+import { addChapter, getChapters } from "../controllers/chapterController.js";
 import {
   addCourse,
   addCourseDetails,
@@ -9,7 +10,6 @@ import {
 } from "../controllers/courseController.js";
 import { protectRoute } from "../middlewares/auth.js";
 import { upload } from "../middlewares/multer.js";
-import { addChapter } from "../controllers/chapterController.js";
 
 const adminRouter = express.Router();
 
@@ -31,6 +31,7 @@ adminRouter.get("/get-course-details", protectRoute, getCourseDetails);
 
 adminRouter.get("/courses", protectRoute, getCourses);
 
-adminRouter.post('/add-chapter', protectRoute, addChapter)
+adminRouter.post("/add-chapter", protectRoute, addChapter);
+adminRouter.get("/chapters", protectRoute, getChapters);
 
 export default adminRouter;

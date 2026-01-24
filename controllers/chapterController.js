@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import ChapterModel from "../models/chapter-model.js";
 import CourseModel from "../models/course-model.js";
+import { objectIdArrayConvert } from "../utils/objectIdConvert.js";
 
 export const addChapter = async (req, res) => {
   try {
@@ -110,5 +111,29 @@ export const addChapter = async (req, res) => {
       success: false,
       message: "Server error: " + error.message,
     });
+  }
+};
+
+export const getChapters = async (req, res) => {
+  try {
+    const { courseId } = req.query;
+
+    if (!courseId || !mongoose.Types.ObjectId.isValid(courseId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid course ID" });
+    }
+
+    const courseObjectId = new mongoose.Types.ObjectId(courseId);
+
+    const allchapters = await ChapterModel.find({
+      courseId: courseObjectId,
+    }).sort({ orderNo: 1 });
+
+    const chapters = objectIdArrayConvert(allchapters);
+    return res.json({ success: true, chapters });
+  } catch (error) {
+    console.error("Get chapters failed:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
