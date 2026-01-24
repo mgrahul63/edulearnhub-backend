@@ -3,6 +3,137 @@ import ChapterModel from "../models/chapter-model.js";
 import CourseModel from "../models/course-model.js";
 import { objectIdArrayConvert } from "../utils/objectIdConvert.js";
 
+import cloudinary from "../configs/cloudinary.js";
+import BookModel from "../models/BookModel.js";
+
+// ------------------ ADD BOOK ------------------
+export const addBook = async (req, res) => {
+  try {
+    const { bookName, courseId } = req.body;
+
+    if (!bookName || !courseId) {
+      return res.status(400).json({
+        success: false,
+        message: "Required fields missing",
+      });
+    }
+
+    let imageUrl = "";
+
+    if (req.file) {
+      const uploadResult = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream({ folder: "books" }, (err, result) => {
+            if (err) reject(err);
+            else resolve(result);
+          })
+          .end(req.file.buffer);
+      });
+
+      imageUrl = uploadResult.secure_url;
+    }
+
+    const book = await BookModel.create({
+      bookName,
+      courseId: mongoose.Types.ObjectId(courseId),
+      ...(imageUrl && { bookImage: imageUrl }),
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Book added successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ------------------ UPDATE BOOK ------------------
+export const updateBook = async (req, res) => {
+  try {
+    const { bookId, bookName, courseId } = req.body;
+
+    if (!bookId || !bookName || !courseId) {
+      return res.status(400).json({
+        success: false,
+        message: "Required fields missing",
+      });
+    }
+
+    let imageUrl = "";
+
+    if (req.file) {
+      const uploadResult = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream({ folder: "books" }, (err, result) => {
+            if (err) reject(err);
+            else resolve(result);
+          })
+          .end(req.file.buffer);
+      });
+
+      imageUrl = uploadResult.secure_url;
+    }
+
+    const book = await BookModel.findByIdAndUpdate(
+      bookId,
+      {
+        bookName,
+        courseId: mongoose.Types.ObjectId(courseId),
+        ...(imageUrl && { bookImage: imageUrl }),
+      },
+      { new: true },
+    );
+
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Book updated successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ------------------ GET BOOKS ------------------
+export const getBook = async (req, res) => {
+  try {
+    const { courseId } = req.query;
+
+    let filter = {};
+    if (courseId) {
+      filter.courseId = courseId;
+    }
+
+    const books = await BookModel.find(filter).sort({ createdAt: -1 }).lean();
+
+    res.status(200).json({
+      success: true,
+      books: objectIdArrayConvert(books),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 export const addChapter = async (req, res) => {
   try {
     const { method, chapterId, courseId, title, description, orderNo } =

@@ -1,6 +1,13 @@
 import express from "express";
 import { addCategory, getCategory } from "../controllers/categoryController.js";
-import { addChapter, deleteChapter, getChapters } from "../controllers/chapterController.js";
+import {
+  addBook,
+  addChapter,
+  deleteChapter,
+  getBook,
+  getChapters,
+  updateBook,
+} from "../controllers/chapterController.js";
 import {
   addCourse,
   addCourseDetails,
@@ -34,5 +41,9 @@ adminRouter.get("/courses", protectRoute, getCourses);
 adminRouter.post("/add-chapter", protectRoute, addChapter);
 adminRouter.get("/chapters", protectRoute, getChapters);
 adminRouter.delete("/delete-chapter", protectRoute, deleteChapter);
+
+adminRouter.post("/book", protectRoute, addBook);
+adminRouter.put("/book", protectRoute, updateBook);
+adminRouter.get("/books", protectRoute, getBook);
 
 export default adminRouter;
