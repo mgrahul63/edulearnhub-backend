@@ -116,7 +116,7 @@ export const getBook = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      books: objectIdArrayConvert(books),
+      books: objectIdArrayConvert(books) || [],
     });
   } catch (error) {
     console.error(error);
