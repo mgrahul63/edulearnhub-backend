@@ -126,9 +126,9 @@ export const getChapters = async (req, res) => {
 
     const courseObjectId = new mongoose.Types.ObjectId(courseId);
 
-    const allchapters = await ChapterModel.find({
-      courseId: courseObjectId,
-    }).sort({ orderNo: 1 });
+    const allchapters = await ChapterModel.find({ courseId: courseObjectId })
+      .sort({ orderNo: 1 })
+      .lean();
 
     const chapters = objectIdArrayConvert(allchapters);
     return res.json({ success: true, chapters });
