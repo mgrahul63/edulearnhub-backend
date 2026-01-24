@@ -42,8 +42,8 @@ adminRouter.post("/add-chapter", protectRoute, addChapter);
 adminRouter.get("/chapters", protectRoute, getChapters);
 adminRouter.delete("/delete-chapter", protectRoute, deleteChapter);
 
-adminRouter.post("/book", protectRoute, addBook);
-adminRouter.put("/book", protectRoute, updateBook);
+adminRouter.post("/book", protectRoute, upload.single("bookImage"), addBook);
+adminRouter.put("/book", protectRoute, upload.single("bookImage"), updateBook);
 adminRouter.get("/books", protectRoute, getBook);
 
 export default adminRouter;
