@@ -183,7 +183,7 @@ export const addChapter = async (req, res) => {
         message: "Invalid course ID",
       });
     }
-    
+
     // ----------- VALIDATE COURSE ID -----------
     if (!mongoose.Types.ObjectId.isValid(bookId)) {
       return res.status(400).json({
@@ -286,7 +286,7 @@ export const addChapter = async (req, res) => {
 
 export const getChapters = async (req, res) => {
   try {
-    const { courseId } = req.query;
+    const { courseId, bookId } = req.query;
 
     if (!courseId || !mongoose.Types.ObjectId.isValid(courseId)) {
       return res
@@ -295,8 +295,11 @@ export const getChapters = async (req, res) => {
     }
 
     const courseObjectId = new mongoose.Types.ObjectId(courseId);
+    const bookIdObjectId = new mongoose.Types.ObjectId(bookId);
 
-    const allchapters = await ChapterModel.find({ courseId: courseObjectId })
+    const allchapters = await ChapterModel.findOne({
+      $and: [{ courseId: courseObjectId }, { bookId: bookIdObjectId }],
+    })
       .sort({ orderNo: 1 })
       .lean();
 
