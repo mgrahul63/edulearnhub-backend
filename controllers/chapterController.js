@@ -42,7 +42,6 @@ export const addBook = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Book added successfully",
-      book,
     });
   } catch (error) {
     console.error(error);
@@ -93,7 +92,6 @@ export const updateBook = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Book updated successfully",
-      book,
     });
   } catch (error) {
     console.error(error);
