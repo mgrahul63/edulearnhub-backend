@@ -6,7 +6,7 @@ import { objectIdArrayConvert } from "../utils/objectIdConvert.js";
 import cloudinary from "../configs/cloudinary.js";
 import BookModel from "../models/book-model.js";
 
-// ------------------ ADD BOOK ------------------
+// Add a new book
 export const addBook = async (req, res) => {
   try {
     const { bookName, courseId } = req.body;
@@ -18,7 +18,7 @@ export const addBook = async (req, res) => {
       });
     }
 
-    let imageUrl = "";
+    let bookImageUrl = "";
 
     if (req.file) {
       const uploadResult = await new Promise((resolve, reject) => {
@@ -30,18 +30,19 @@ export const addBook = async (req, res) => {
           .end(req.file.buffer);
       });
 
-      imageUrl = uploadResult.secure_url;
+      bookImageUrl = uploadResult.secure_url;
     }
 
     const book = await BookModel.create({
       bookName,
-      courseId: mongoose.Types.ObjectId(courseId),
-      ...(imageUrl && { bookImage: imageUrl }),
+      courseId, // string from frontend is fine
+      ...(bookImageUrl && { bookImage: bookImageUrl }),
     });
 
     res.status(201).json({
       success: true,
       message: "Book added successfully",
+      book,
     });
   } catch (error) {
     console.error(error);
@@ -52,7 +53,7 @@ export const addBook = async (req, res) => {
   }
 };
 
-// ------------------ UPDATE BOOK ------------------
+// Update existing book
 export const updateBook = async (req, res) => {
   try {
     const { bookId, bookName, courseId } = req.body;
@@ -64,7 +65,7 @@ export const updateBook = async (req, res) => {
       });
     }
 
-    let imageUrl = "";
+    let updateData = { bookName, courseId };
 
     if (req.file) {
       const uploadResult = await new Promise((resolve, reject) => {
@@ -75,19 +76,12 @@ export const updateBook = async (req, res) => {
           })
           .end(req.file.buffer);
       });
-
-      imageUrl = uploadResult.secure_url;
+      updateData.bookImage = uploadResult.secure_url;
     }
 
-    const book = await BookModel.findByIdAndUpdate(
-      bookId,
-      {
-        bookName,
-        courseId: mongoose.Types.ObjectId(courseId),
-        ...(imageUrl && { bookImage: imageUrl }),
-      },
-      { new: true },
-    );
+    const book = await BookModel.findByIdAndUpdate(bookId, updateData, {
+      new: true,
+    });
 
     if (!book) {
       return res.status(404).json({
@@ -99,6 +93,7 @@ export const updateBook = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Book updated successfully",
+      book,
     });
   } catch (error) {
     console.error(error);
@@ -109,21 +104,19 @@ export const updateBook = async (req, res) => {
   }
 };
 
-// ------------------ GET BOOKS ------------------
+// Get all books (optionally for a course)
 export const getBook = async (req, res) => {
   try {
     const { courseId } = req.query;
+    const filter = {};
 
-    let filter = {};
-    if (courseId) {
-      filter.courseId = courseId;
-    }
+    if (courseId) filter.courseId = courseId;
 
-    const books = await BookModel.find(filter).sort({ createdAt: -1 }).lean();
+    const books = await BookModel.find(filter).sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
-      books: objectIdArrayConvert(books),
+      books,
     });
   } catch (error) {
     console.error(error);
