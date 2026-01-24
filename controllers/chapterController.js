@@ -166,19 +166,26 @@ export const deleteBook = async (req, res) => {
 
 export const addChapter = async (req, res) => {
   try {
-    const { method, chapterId, courseId, title, description, orderNo } =
+    const { method, chapterId, courseId, bookId, title, description, orderNo } =
       req.body;
 
     // ----------- BASIC VALIDATION -----------
-    if (!method || !courseId || !orderNo) {
+    if (!method || !courseId || !orderNo || !bookId) {
       return res.status(400).json({
         success: false,
         message: "Required fields missing",
       });
     }
 
-    // ----------- VALIDATE COURSE ID -----------
     if (!mongoose.Types.ObjectId.isValid(courseId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid course ID",
+      });
+    }
+    
+    // ----------- VALIDATE COURSE ID -----------
+    if (!mongoose.Types.ObjectId.isValid(bookId)) {
       return res.status(400).json({
         success: false,
         message: "Invalid course ID",
@@ -186,6 +193,7 @@ export const addChapter = async (req, res) => {
     }
 
     const courseObjectId = new mongoose.Types.ObjectId(courseId);
+    const bookObjectId = new mongoose.Types.ObjectId(bookId);
 
     const courseExists = await CourseModel.findById(courseObjectId);
     if (!courseExists) {
@@ -219,6 +227,7 @@ export const addChapter = async (req, res) => {
 
       await ChapterModel.create({
         courseId: courseObjectId,
+        bookId: bookObjectId,
         title,
         description,
         orderNo,
