@@ -9,6 +9,7 @@ import {
 } from "../controllers/courseController.js";
 import { protectRoute } from "../middlewares/auth.js";
 import { upload } from "../middlewares/multer.js";
+import { addChapter } from "../controllers/chapterController.js";
 
 const adminRouter = express.Router();
 
@@ -29,5 +30,7 @@ adminRouter.post("/add-course-details", protectRoute, addCourseDetails);
 adminRouter.get("/get-course-details", protectRoute, getCourseDetails);
 
 adminRouter.get("/courses", protectRoute, getCourses);
+
+adminRouter.post('/add-chapter', protectRoute, addChapter)
 
 export default adminRouter;
