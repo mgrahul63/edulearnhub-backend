@@ -35,7 +35,7 @@ export const addBook = async (req, res) => {
 
     const book = await BookModel.create({
       bookName,
-      courseId, // string from frontend is fine
+      courseId,
       ...(bookImageUrl && { bookImage: bookImageUrl }),
     });
 
@@ -112,11 +112,11 @@ export const getBook = async (req, res) => {
 
     if (courseId) filter.courseId = courseId;
 
-    const books = await BookModel.find(filter).sort({ createdAt: -1 });
+    const books = await BookModel.find(filter).sort({ createdAt: -1 }).lean();
 
     res.status(200).json({
       success: true,
-      books,
+      books: objectIdArrayConvert(books),
     });
   } catch (error) {
     console.error(error);
