@@ -4,7 +4,7 @@ import CourseModel from "../models/course-model.js";
 import { objectIdArrayConvert } from "../utils/objectIdConvert.js";
 
 import cloudinary from "../configs/cloudinary.js";
-import BookModel from "../models/BookModel.js";
+import BookModel from "../models/book-model.js";
 
 // ------------------ ADD BOOK ------------------
 export const addBook = async (req, res) => {
