@@ -33,5 +33,6 @@ adminRouter.get("/courses", protectRoute, getCourses);
 
 adminRouter.post("/add-chapter", protectRoute, addChapter);
 adminRouter.get("/chapters", protectRoute, getChapters);
+adminRouter.delete("/delete-chapter", protectRoute, getChapters);
 
 export default adminRouter;

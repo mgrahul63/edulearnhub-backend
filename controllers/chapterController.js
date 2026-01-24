@@ -137,3 +137,40 @@ export const getChapters = async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+export const deleteChapter = async (req, res) => {
+  try {
+    const { chapterId } = req.body; // get chapterId from request body
+
+    if (!chapterId) {
+      return res.status(400).json({
+        success: false,
+        message: "Chapter ID is required",
+      });
+    }
+
+    // Find the chapter
+    const chapter = await ChapterModel.findById(chapterId);
+
+    if (!chapter) {
+      return res.status(404).json({
+        success: false,
+        message: "Chapter not found",
+      });
+    }
+
+    // Delete the chapter
+    await ChapterModel.findByIdAndDelete(chapterId);
+
+    return res.json({
+      success: true,
+      message: "Chapter deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete chapter error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
