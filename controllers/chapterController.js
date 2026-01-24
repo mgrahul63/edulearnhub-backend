@@ -127,6 +127,43 @@ export const getBook = async (req, res) => {
   }
 };
 
+export const deleteBook = async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Book ID is required",
+      });
+    }
+
+    // Find the book
+    const book = await BookModel.findById(id);
+
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+      });
+    }
+
+    // Delete the chapter
+    await BookModel.findByIdAndDelete(id);
+
+    return res.json({
+      success: true,
+      message: "Book deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete book error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 export const addChapter = async (req, res) => {
   try {
     const { method, chapterId, courseId, title, description, orderNo } =

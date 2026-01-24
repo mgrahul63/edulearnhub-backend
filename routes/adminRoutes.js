@@ -3,6 +3,7 @@ import { addCategory, getCategory } from "../controllers/categoryController.js";
 import {
   addBook,
   addChapter,
+  deleteBook,
   deleteChapter,
   getBook,
   getChapters,
@@ -45,5 +46,6 @@ adminRouter.delete("/delete-chapter", protectRoute, deleteChapter);
 adminRouter.post("/book", protectRoute, upload.single("bookImage"), addBook);
 adminRouter.put("/book", protectRoute, upload.single("bookImage"), updateBook);
 adminRouter.get("/books", protectRoute, getBook);
+adminRouter.delete("/delete-book", protectRoute, deleteBook);
 
 export default adminRouter;
