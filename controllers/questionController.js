@@ -18,19 +18,19 @@ export const createQuestion = async (req, res) => {
     const formattedOptions = options?.map((opt) => ({
       _id: new mongoose.Types.ObjectId(),
       text: opt?.option,
-      isCorrect: opt?.isCorrect || false,
+      isCorrect: !!opt?.isCorrect,
     }));
 
     const newQuestion = await QuestionModel.create({
-      bookId: mongoose.Types.ObjectId(bookId),
-      chapterId: mongoose.Types.ObjectId(chapterId),
+      bookId: new mongoose.Types.ObjectId(bookId),
+      chapterId: new mongoose.Types.ObjectId(chapterId),
       question,
       options: formattedOptions,
     });
 
     res.status(201).json({
       success: true,
-      message: "Successfully created!",
+      message: "Question created successfully!",
       data: newQuestion,
     });
   } catch (err) {
@@ -39,42 +39,45 @@ export const createQuestion = async (req, res) => {
   }
 };
 
-// Update existing question
+// Update an existing question
 export const updateQuestion = async (req, res) => {
   try {
     const { id, bookId, chapterId, question, options } = req.body;
 
-    if (!id)
+    if (!id) {
       return res
         .status(400)
-        .json({ success: false, message: "Question id required" });
+        .json({ success: false, message: "Question id is required" });
+    }
 
     const questionDoc = await QuestionModel.findById(id);
-    if (!questionDoc)
+    if (!questionDoc) {
       return res
         .status(404)
         .json({ success: false, message: "Question not found" });
+    }
 
-    // Update bookId or chapterId if passed
-    if (bookId) questionDoc.bookId = mongoose.Types.ObjectId(bookId);
-    if (chapterId) questionDoc.chapterId = mongoose.Types.ObjectId(chapterId);
+    // Update bookId and chapterId if provided
+    if (bookId) questionDoc.bookId = new mongoose.Types.ObjectId(bookId);
+    if (chapterId)
+      questionDoc.chapterId = new mongoose.Types.ObjectId(chapterId);
 
     questionDoc.question = question;
 
-    // Update options: preserve existing _id, generate new _id for new options
+    // Update options: preserve existing _id, create new _id for new options
     questionDoc.options = options.map((opt) => ({
-      _id: opt?.optionId
-        ? mongoose.Types.ObjectId(opt.optionId)
+      _id: opt.optionId
+        ? new mongoose.Types.ObjectId(opt.optionId)
         : new mongoose.Types.ObjectId(),
-      text: opt?.option,
-      isCorrect: opt?.isCorrect || false,
+      text: opt.option,
+      isCorrect: !!opt.isCorrect,
     }));
 
     await questionDoc.save();
 
     res.status(200).json({
       success: true,
-      message: "Successfully updated!",
+      message: "Question updated successfully!",
       data: questionDoc,
     });
   } catch (err) {
@@ -83,7 +86,7 @@ export const updateQuestion = async (req, res) => {
   }
 };
 
-// Get all questions for a book + chapter
+// Get all questions for a specific book and chapter
 export const getQuestions = async (req, res) => {
   try {
     const { bookId, chapterId } = req.query;
@@ -96,15 +99,16 @@ export const getQuestions = async (req, res) => {
     }
 
     const questions = await QuestionModel.find({
-      bookId: mongoose.Types.ObjectId(bookId),
-      chapterId: mongoose.Types.ObjectId(chapterId),
+      bookId: new mongoose.Types.ObjectId(bookId),
+      chapterId: new mongoose.Types.ObjectId(chapterId),
     })
       .lean()
       .sort({ createdAt: -1 }); // newest first
 
-    res
-      .status(200)
-      .json({ success: true, data: objectIdArrayConvert(questions) });
+    res.status(200).json({
+      success: true,
+      data: objectIdArrayConvert(questions), // converts ObjectIds to strings if needed
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: err.message });
@@ -116,17 +120,19 @@ export const getQuestionById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!id)
+    if (!id) {
       return res
         .status(400)
-        .json({ success: false, message: "Question id required" });
+        .json({ success: false, message: "Question id is required" });
+    }
 
     const question = await QuestionModel.findById(id);
 
-    if (!question)
+    if (!question) {
       return res
         .status(404)
         .json({ success: false, message: "Question not found" });
+    }
 
     res.status(200).json({ success: true, data: question });
   } catch (err) {
