@@ -22,6 +22,11 @@ const questionSchema = new mongoose.Schema(
       required: true, // every question must belong to a book
       ref: "Book", // optional, if you have a Book model
     },
+    chapterId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true, // every question must belong to a chapter
+      ref: "Chapter", // optional, if you have a Chapter model
+    },
     question: {
       type: String,
       required: true,

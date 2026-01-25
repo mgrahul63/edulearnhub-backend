@@ -5,12 +5,14 @@ import { objectIdArrayConvert } from "../utils/objectIdConvert.js";
 // Create a new question
 export const createQuestion = async (req, res) => {
   try {
-    const { bookId, question, options } = req.body;
+    const { bookId, chapterId, question, options } = req.body;
 
-    if (!bookId)
-      return res
-        .status(400)
-        .json({ success: false, message: "bookId is required" });
+    if (!bookId || !chapterId) {
+      return res.status(400).json({
+        success: false,
+        message: "bookId and chapterId are required",
+      });
+    }
 
     // Transform frontend options to match schema (_id + text + isCorrect)
     const formattedOptions = options?.map((opt) => ({
@@ -21,6 +23,7 @@ export const createQuestion = async (req, res) => {
 
     const newQuestion = await QuestionModel.create({
       bookId: mongoose.Types.ObjectId(bookId),
+      chapterId: mongoose.Types.ObjectId(chapterId),
       question,
       options: formattedOptions,
     });
@@ -39,7 +42,7 @@ export const createQuestion = async (req, res) => {
 // Update existing question
 export const updateQuestion = async (req, res) => {
   try {
-    const { id, bookId, question, options } = req.body;
+    const { id, bookId, chapterId, question, options } = req.body;
 
     if (!id)
       return res
@@ -52,8 +55,9 @@ export const updateQuestion = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Question not found" });
 
-    // Optionally update bookId if passed
+    // Update bookId or chapterId if passed
     if (bookId) questionDoc.bookId = mongoose.Types.ObjectId(bookId);
+    if (chapterId) questionDoc.chapterId = mongoose.Types.ObjectId(chapterId);
 
     questionDoc.question = question;
 
@@ -79,23 +83,24 @@ export const updateQuestion = async (req, res) => {
   }
 };
 
-// Get all questions for a book
+// Get all questions for a book + chapter
 export const getQuestions = async (req, res) => {
   try {
-    const { bookId } = req.query; // frontend should send ?bookId=...
+    const { bookId, chapterId } = req.query;
 
-    if (!bookId) {
+    if (!bookId || !chapterId) {
       return res.status(400).json({
         success: false,
-        message: "bookId query parameter is required",
+        message: "bookId and chapterId query parameters are required",
       });
     }
 
     const questions = await QuestionModel.find({
       bookId: mongoose.Types.ObjectId(bookId),
+      chapterId: mongoose.Types.ObjectId(chapterId),
     })
       .lean()
-      .sort({ createdAt: -1 }); // 1 = ascending, -1 = descending
+      .sort({ createdAt: -1 }); // newest first
 
     res
       .status(200)
@@ -106,7 +111,7 @@ export const getQuestions = async (req, res) => {
   }
 };
 
-// Optional: get a single question by id
+// Get a single question by id
 export const getQuestionById = async (req, res) => {
   try {
     const { id } = req.params;
