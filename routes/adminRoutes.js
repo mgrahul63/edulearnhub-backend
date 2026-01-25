@@ -16,6 +16,11 @@ import {
   getCourseDetails,
   getCourses,
 } from "../controllers/courseController.js";
+import {
+  createQuestion,
+  getQuestions,
+  updateQuestion,
+} from "../controllers/questionController.js";
 import { protectRoute } from "../middlewares/auth.js";
 import { upload } from "../middlewares/multer.js";
 
@@ -47,5 +52,10 @@ adminRouter.post("/book", protectRoute, upload.single("bookImage"), addBook);
 adminRouter.put("/book", protectRoute, upload.single("bookImage"), updateBook);
 adminRouter.get("/books", protectRoute, getBook);
 adminRouter.delete("/delete-book", protectRoute, deleteBook);
+
+adminRouter.post("/question", protectRoute, createQuestion);
+adminRouter.put("/question", protectRoute, updateQuestion);
+// adminRouter.delete("/delete-book", protectRoute, deleteBook);
+adminRouter.get("/questions", protectRoute, getQuestions);
 
 export default adminRouter;
