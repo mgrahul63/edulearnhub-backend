@@ -58,71 +58,80 @@ export const getAnswerSheets = async (req, res) => {
   try {
     const { bookId, chapterId, studentId } = req.query;
 
-    // Build query object
     const query = {};
     if (bookId) query.bookId = bookId;
     if (chapterId) query.chapterId = chapterId;
     if (studentId) query.studentId = studentId;
 
-    // Fetch answer sheets and populate related info
     const sheets = await AnswerSheet.find(query)
-      .populate("bookId", "bookName") // Book name
-      .populate("chapterId", "title description") // Chapter name
-      .populate("studentId", "name email") // Student info
+      .populate("bookId", "bookName")
+      .populate("chapterId", "title description")
+      .populate("studentId", "name email")
       .lean();
 
-    // Optional: populate question text & option text for each answer
-    for (let sheet of sheets) {
-      // book
-      if (sheet.bookId) {
-        sheet.book = {
-          bookId: sheet.bookId._id,
-          bookName: sheet.bookId.bookName,
-        };
-      }
+    for (const sheet of sheets) {
+      // reshape book
+      sheet.book = sheet.bookId
+        ? {
+            bookId: sheet.bookId._id,
+            bookName: sheet.bookId.bookName,
+          }
+        : null;
 
-      // chapter
-      if (sheet.chapterId) {
-        sheet.chapter = {
-          chapterId: sheet.chapterId._id,
-          title: sheet.chapterId.title,
-          description: sheet.chapterId.description,
-        };
-      }
+      // reshape chapter
+      sheet.chapter = sheet.chapterId
+        ? {
+            chapterId: sheet.chapterId._id,
+            title: sheet.chapterId.title,
+            description: sheet.chapterId.description,
+          }
+        : null;
 
-      // student
-      if (sheet.studentId) {
-        sheet.student = {
-          name: sheet.studentId.name,
-          email: sheet.studentId.email,
-        };
-      }
+      // reshape student
+      sheet.student = sheet.studentId
+        ? {
+            name: sheet.studentId.name,
+            email: sheet.studentId.email,
+          }
+        : null;
 
-      // optional: remove old keys
       delete sheet.bookId;
       delete sheet.chapterId;
       delete sheet.studentId;
 
-      for (let ans of sheet.yourAnswer) {
-        let answers = {};
-        answers.yourselectedOption = ans.selectedOption;
-        answers.questionID = ans.questionID;
+      // ✅ THIS is what you were missing
+      const answers = [];
+
+      for (const ans of sheet.yourAnswer) {
         const question = await QuestionModel.findById(ans.questionID).lean();
-        if (question) {
-          answers.questionText = question?.question;
-          answers.options = question.options.map((opt) => ({
+        if (!question) continue;
+
+        answers.push({
+          questionID: ans.questionID,
+          yourselectedOption: ans.selectedOption,
+          questionText: question.question,
+          options: question.options.map((opt) => ({
             id: opt._id,
             text: opt.text,
             isCorrect: opt.isCorrect,
-          }));
-        }
+          })),
+        });
       }
+
+      // replace yourAnswer completely
       delete sheet.yourAnswer;
+      sheet.answers = answers;
     }
 
-    return res.json({ success: true, data: objectIdArrayConvert(sheets) });
+    return res.json({
+      success: true,
+      data: objectIdArrayConvert(sheets),
+    });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ success: false, message: "Server error" });
+    console.error("getAnswerSheets error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };
