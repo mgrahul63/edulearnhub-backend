@@ -63,6 +63,6 @@ adminRouter.put("/question", protectRoute, updateQuestion);
 adminRouter.get("/questions", protectRoute, getQuestions);
 
 adminRouter.post("/add-answer", protectRoute, addAnswerSheet);
-adminRouter.get("/add-answers", protectRoute, getAnswerSheets);
+adminRouter.get("/get-answers", protectRoute, getAnswerSheets);
 
 export default adminRouter;
