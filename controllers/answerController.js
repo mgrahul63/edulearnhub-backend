@@ -103,7 +103,7 @@ export const getAnswerSheets = async (req, res) => {
       delete sheet.studentId;
 
       for (let ans of sheet.yourAnswer) {
-        const question = await QuestionModel.findById(ans.questionID).lean(); 
+        const question = await QuestionModel.findById(ans.questionID).lean();
         if (question) {
           ans.questionText = question?.question;
           const option = question.options.find(
@@ -117,10 +117,9 @@ export const getAnswerSheets = async (req, res) => {
           }));
         }
       }
-      delete sheet.yourAnswer;
     }
 
-    return res.json({ success: true, data: sheets });
+    return res.json({ success: true, data: objectIdArrayConvert(sheets) });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ success: false, message: "Server error" });
