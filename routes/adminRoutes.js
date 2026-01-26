@@ -1,4 +1,8 @@
 import express from "express";
+import {
+  addAnswerSheet,
+  getAnswerSheets,
+} from "../controllers/answerController.js";
 import { addCategory, getCategory } from "../controllers/categoryController.js";
 import {
   addBook,
@@ -57,5 +61,8 @@ adminRouter.post("/question", protectRoute, createQuestion);
 adminRouter.put("/question", protectRoute, updateQuestion);
 // adminRouter.delete("/delete-book", protectRoute, deleteBook);
 adminRouter.get("/questions", protectRoute, getQuestions);
+
+adminRouter.post("/add-answer", protectRoute, addAnswerSheet);
+adminRouter.get("/add-answers", protectRoute, getAnswerSheets);
 
 export default adminRouter;
