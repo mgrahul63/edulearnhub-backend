@@ -65,24 +65,59 @@ export const getAnswerSheets = async (req, res) => {
 
     // Fetch answer sheets and populate related info
     const sheets = await AnswerSheet.find(query)
-      .populate("bookId", "name")          // Book name
-      .populate("chapterId", "name")       // Chapter name
+      .populate("bookId", "bookName") // Book name
+      .populate("chapterId", "title description") // Chapter name
       .populate("studentId", "name email") // Student info
       .lean();
 
     // Optional: populate question text & option text for each answer
     for (let sheet of sheets) {
+      // book
+      if (sheet.bookId) {
+        sheet.book = {
+          bookId: sheet.bookId._id,
+          bookName: sheet.bookId.bookName,
+        };
+      }
+
+      // chapter
+      if (sheet.chapterId) {
+        sheet.chapter = {
+          chapterId: sheet.chapterId._id,
+          title: sheet.chapterId.title,
+          description: sheet.chapterId.description,
+        };
+      }
+
+      // student
+      if (sheet.studentId) {
+        sheet.student = {
+          name: sheet.studentId.name,
+          email: sheet.studentId.email,
+        };
+      }
+
+      // optional: remove old keys
+      delete sheet.bookId;
+      delete sheet.chapterId;
+      delete sheet.studentId;
+
       for (let ans of sheet.yourAnswer) {
-        const question = await QuestionModel.findById(ans.questionID).lean();
+        const question = await QuestionModel.findById(ans.questionID).lean(); 
         if (question) {
           ans.questionText = question?.question;
           const option = question.options.find(
-            (opt) => opt._id.toString() === ans?.selectedOption
+            (opt) => opt._id.toString() === ans?.selectedOption,
           );
           ans.selectedOptionText = option?.text || null;
-          ans.options = question.options.map(opt => ({ id: opt._id, text: opt.text }));
+          ans.options = question.options.map((opt) => ({
+            id: opt._id,
+            text: opt.text,
+            isCorrect: opt.isCorrect,
+          }));
         }
       }
+      delete sheet.yourAnswer;
     }
 
     return res.json({ success: true, data: sheets });
