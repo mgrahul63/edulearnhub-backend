@@ -104,20 +104,20 @@ export const getAnswerSheets = async (req, res) => {
       delete sheet.studentId;
 
       for (let ans of sheet.yourAnswer) {
+        let answers = {};
+        answers.yourselectedOption = ans.selectedOption;
+        answers.questionID = ans.questionID;
         const question = await QuestionModel.findById(ans.questionID).lean();
         if (question) {
-          ans.questionText = question?.question;
-          const option = question.options.find(
-            (opt) => opt._id.toString() === ans?.selectedOption,
-          );
-          ans.selectedOptionText = option?.text || null;
-          ans.options = question.options.map((opt) => ({
+          answers.questionText = question?.question;
+          answers.options = question.options.map((opt) => ({
             id: opt._id,
             text: opt.text,
             isCorrect: opt.isCorrect,
           }));
         }
       }
+      delete sheet.yourAnswer;
     }
 
     return res.json({ success: true, data: objectIdArrayConvert(sheets) });
